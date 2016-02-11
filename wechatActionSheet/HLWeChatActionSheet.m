@@ -204,6 +204,9 @@ static NSMutableArray *actionSheetQueue;
 @end
 
 @implementation HLWeChatActionSheet
+- (void)dealloc {
+
+}
 
 - (NSMutableArray *)actionArray {
     if (!_actionArray) {
@@ -234,7 +237,7 @@ static NSMutableArray *actionSheetQueue;
         self.hidden = YES;
         self.clipsToBounds = YES;
         _title = title;
-
+        
         _actionSheetWrapperView = [UIView new];
         [self addSubview:_actionSheetWrapperView];
         
@@ -268,7 +271,6 @@ static NSMutableArray *actionSheetQueue;
     }
     [actionSheetQueue addObject:self];
     
-    self.backgroundColor = HLColorRGBA(0, 0, 0, 0.6);
     self.hidden = NO;
     self.alpha = 0;
     
@@ -304,10 +306,10 @@ static NSMutableArray *actionSheetQueue;
         [cell mas_makeConstraints:^(MASConstraintMaker *make) {
             make.leading.trailing.equalTo(self.actionSheetWrapperView);
         }];
-
+        
         __weak __typeof(self)weakself = self;
         cell.actionSheetBlock = ^{
-        __strong __typeof(weakself)strongSelf = weakself;
+            __strong __typeof(weakself)strongSelf = weakself;
             if (actionModel.actionBlock) {
                 actionModel.actionBlock();
             }
@@ -320,13 +322,13 @@ static NSMutableArray *actionSheetQueue;
     cancelActionModel.title = @"取消";
     
     _HLActionSheetCancelCell *cancelCell = [[_HLActionSheetCancelCell alloc] initWithActionSheetModel:cancelActionModel];
-
+    
     __weak __typeof(self)weakself = self;
     cancelCell.actionSheetBlock = ^{
         __strong __typeof(weakself)strongSelf = weakself;
         [strongSelf dismiss];
     };
-
+    
     [self.actionSheetWrapperView addSubview:cancelCell];
     
     [cancelCell mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -381,18 +383,20 @@ static NSMutableArray *actionSheetQueue;
     }];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    CGPoint point = [touch locationInView:self];
+    
     CGRect contentRect = [self.actionSheetWrapperView convertRect:self.actionSheetWrapperView.frame toView:self];
     CGRect blankRect = CGRectMake(0, 0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds)-CGRectGetHeight(contentRect));
     if (CGRectContainsPoint(blankRect, point)) {
         [self dismiss];
     }
-    return [super hitTest:point withEvent:event];
 }
 
 #pragma mark - Coding
 - (instancetype)initWithCoder:(NSCoder *)decoder {
-
+    
     return [self initWithTitle:nil];
 }
 
