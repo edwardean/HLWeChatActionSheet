@@ -1,4 +1,7 @@
-platform :ios, '7.0'
+platform :ios, '8.0'
 inhibit_all_warnings!
 
-pod 'Masonry'
+target 'wechatActionSheet' do
+    pod 'Masonry'
+end
+
